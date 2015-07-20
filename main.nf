@@ -23,7 +23,7 @@ log.info "Output dir         : ${params.out}"
 log.info ""
 
 genome_index = file(params.index)
-gft = file(params.gft)
+gft = file(params.gtf)
 out = file(params.out)
 
 process star {
