@@ -58,4 +58,4 @@ process star {
 results.subscribe { 
     log.info "Copying results to file: ${out}/${it.name}"
     it.copyTo(out)
- }cd /
+ }
