@@ -44,7 +44,7 @@ process star {
  
     """
     prefix=\$(echo $read1 | sed 's/_.*//')
-    cpu=$(nproc)
+    cpu=\$(nproc)
     STAR --genome-dir $genome_index \\
     	 --sjdbGTFfile $gtf \\
     	 --readFilesIn $read1 $read2 \\
@@ -58,4 +58,4 @@ process star {
 results.subscribe { 
     log.info "Copying results to file: ${out}/${it.name}"
     it.copyTo(out)
- }
+ }cd /
