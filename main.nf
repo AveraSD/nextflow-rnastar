@@ -2,7 +2,7 @@
 
 params.read1 = Channel.fromPath("s3://averafastq/everything_else/*_1.fastq.gz")
 params.read2 = Channel.fromPath("s3://averafastq/everything_else/*_2.fastq.gz")
-params.index = "s3://averagenomedb/Homo_sapiens/UCSC/hg19/star_genome"
+params.index = "/shared/Homo_sapiens/UCSC/hg19/star_2.4.2a_genome"
 params.gtf = "s3://averagenomedb/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf"
 params.out = "s3://averatest/star_test/"
 params.staropts = "--outSAMstrandField intronMotif --outFilterIntronMotifs RemoveNoncanonical"
@@ -46,7 +46,7 @@ process star {
     STAR --genomeDir $index \\
          --sjdbGTFfile $gtf \\
          --readFilesIn $read1 $read2 \\
-         --readFilesCommand zcat \\
+         --readFilesCommand cat \\
          $params.staropts \\
          --runThreadN \$cpu \\
          --outFileNamePrefix \$prefix
@@ -56,4 +56,4 @@ process star {
 results.subscribe {
     log.info "Copying results to file: ${params.out}/${it.name}"
     it.copyTo(out)
- }
+}
