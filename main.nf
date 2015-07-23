@@ -5,7 +5,19 @@ params.read2 = Channel.fromPath("s3://averafastq/everything_else/*_2.fastq.gz")
 params.index = "/shared/Homo_sapiens/UCSC/hg19/star_2.4.2a_genome"
 params.gtf = "s3://averagenomedb/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf"
 params.out = "s3://averatest/star_test/"
-params.staropts = "--outSAMstrandField intronMotif --outFilterIntronMotifs RemoveNoncanonical"
+params.towpassMode = "Basic"
+params.quantMode = "TranscriptomeSAM GeneCount"
+params.alignIntronMax = "200000"
+params.alignMatesGapMax = "200000"
+params.outFilterMismatchNoverLmax = "0.04"
+params.outFilterMismatchNoverLmax = "RemoveNoncanonical"
+params.outSAMtype = "BAM SortedByCoordinate"
+params.outSAMunmapped = "Within"
+params.outSAMattrRGline= "ID:$rgid SM:$rgsm PL:$rgpl LB:$rglb"
+params.outSAMstrandField = "intronMotif"
+params.chimSegmentMin = "25"
+params.chimJunctionOverhangMin = "25"
+params.outTmpDir = "/tmp/tmp"
 
 log.info "TRANSCRIPTOME QUANT P I P E L I N E"
 log.info "================================="
@@ -34,11 +46,15 @@ process star {
     file index
 
     output:
-    file '*.Aligned.out.sorted.bam' into results
+    file '*.Aligned.sortedByCoord.out.bam' into bam
     file '*.Log.final.out' into results
     file '*.Log.out' into results
     file '*.Log.progress.out' into results
     file '*.SJ.out.tab' into results
+    file '*.Chimeric.out.junction' into results
+    file '*.Chimeric.out.sam' into results 
+    file '*.ReadsPerGene.out.tab' into results
+    file '*.Aligned.toTranscriptome.out.bam' into bam
 
     """
     prefix=\$(echo $read1 | sed 's/_.*//')
@@ -47,13 +63,43 @@ process star {
          --sjdbGTFfile $gtf \\
          --readFilesIn $read1 $read2 \\
          --readFilesCommand cat \\
-         $params.staropts \\
          --runThreadN \$cpu \\
          --outFileNamePrefix \$prefix
+         --genomeDir $genomeDir \
+		 --twopassMode $params.twopassMode \
+		 --quantMode $params.quantMode \	
+		 --alignIntronMax $params.alignIntronMax \
+		 --alignMatesGapMax $params.alignMatesGapMax \
+		 --outFilterMismatchNoverLmax $params.outFilterMismatchNoverLmax \
+		 --outFilterIntronMotifs $params.outFilterIntronMotifs \
+		 --outSAMtype $params.outSAMtype \
+		 --outSAMunmapped $params.outSAMunmapped \
+		 --outSAMattrRGline $params.outSAMattrRGline \
+		 --outSAMstrandField $params.outSAMstrandField \
+		 --chimSegmentMin $params.chimSegmentMin \
+		 --chimJunctionOverhangMin $params.chimJunctionOverhangMin \
+		 --outTmpDir $params.scratch
     """
+}
+
+process index {
+	
+	input:
+	file '*.Aligned.sortedByCoord.out.bam' from bam
+	file '*.Aligned.toTranscriptome.out.bam' from bam
+
+	output:
+	file '*.Aligned.sortedByCoord.out.bam.bai'
+	file '*.Aligned.toTranscriptome.out.bam.bai'
+
+	"""
+	cpu=\$(grep -c "processor" /proc/cpuinfo)
+	sambamba index -t  $\cpu -p
+	"""
 }
 
 results.subscribe {
     log.info "Copying results to file: ${params.out}/${it.name}"
     it.copyTo(out)
 }
+
