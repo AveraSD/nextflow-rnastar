@@ -5,12 +5,12 @@ params.read2 = Channel.fromPath("s3://averafastq/everything_else/*_2.fastq.gz")
 params.index = "/shared/Homo_sapiens/UCSC/hg19/star_2.4.2a_genome"
 params.gtf = "s3://averagenomedb/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf"
 params.out = "s3://averatest/star_test/"
-params.towpassMode = "Basic"
-params.quantMode = "TranscriptomeSAM GeneCount"
+params.twopassMode = "Basic"
+params.quantMode = "TranscriptomeSAM GeneCounts"
 params.alignIntronMax = "200000"
 params.alignMatesGapMax = "200000"
 params.outFilterMismatchNoverLmax = "0.04"
-params.outFilterMismatchNoverLmax = "RemoveNoncanonical"
+params.outFilterIntronMotifs = "RemoveNoncanonical"
 params.outSAMtype = "BAM SortedByCoordinate"
 params.outSAMunmapped = "Within"
 params.outSAMattrRGline= "ID:$rgid SM:$rgsm PL:$rgpl LB:$rglb"
@@ -65,9 +65,8 @@ process star {
          --readFilesCommand cat \\
          --runThreadN \$cpu \\
          --outFileNamePrefix \$prefix \\
-         --genomeDir $genomeDir \\
 		 --twopassMode $params.twopassMode \\
-		 --quantMode $params.quantMode \\	
+#		 --quantMode $params.quantMode \\	
 		 --alignIntronMax $params.alignIntronMax \\
 		 --alignMatesGapMax $params.alignMatesGapMax \\
 		 --outFilterMismatchNoverLmax $params.outFilterMismatchNoverLmax \\
@@ -78,7 +77,7 @@ process star {
 		 --outSAMstrandField $params.outSAMstrandField \\
 		 --chimSegmentMin $params.chimSegmentMin \\
 		 --chimJunctionOverhangMin $params.chimJunctionOverhangMin \\
-		 --outTmpDir $params.scratch
+		 --outTmpDir $params.outTmpDir
     """
 }
 
@@ -94,7 +93,7 @@ process index {
 
 	"""
 	cpu=\$(grep -c "processor" /proc/cpuinfo)
-	sambamba index -t  $\cpu -p
+	sambamba index -t  \`$cpu -p
 	"""
 }
 
