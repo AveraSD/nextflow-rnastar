@@ -64,20 +64,20 @@ process star {
          --readFilesIn $read1 $read2 \\
          --readFilesCommand cat \\
          --runThreadN \$cpu \\
-         --outFileNamePrefix \$prefix
-         --genomeDir $genomeDir \
-		 --twopassMode $params.twopassMode \
-		 --quantMode $params.quantMode \	
-		 --alignIntronMax $params.alignIntronMax \
-		 --alignMatesGapMax $params.alignMatesGapMax \
-		 --outFilterMismatchNoverLmax $params.outFilterMismatchNoverLmax \
-		 --outFilterIntronMotifs $params.outFilterIntronMotifs \
-		 --outSAMtype $params.outSAMtype \
-		 --outSAMunmapped $params.outSAMunmapped \
-		 --outSAMattrRGline $params.outSAMattrRGline \
-		 --outSAMstrandField $params.outSAMstrandField \
-		 --chimSegmentMin $params.chimSegmentMin \
-		 --chimJunctionOverhangMin $params.chimJunctionOverhangMin \
+         --outFileNamePrefix \$prefix \\
+         --genomeDir $genomeDir \\
+		 --twopassMode $params.twopassMode \\
+		 --quantMode $params.quantMode \\	
+		 --alignIntronMax $params.alignIntronMax \\
+		 --alignMatesGapMax $params.alignMatesGapMax \\
+		 --outFilterMismatchNoverLmax $params.outFilterMismatchNoverLmax \\
+		 --outFilterIntronMotifs $params.outFilterIntronMotifs \\
+		 --outSAMtype $params.outSAMtype \\
+		 --outSAMunmapped $params.outSAMunmapped \\
+		 --outSAMattrRGline $params.outSAMattrRGline \\
+		 --outSAMstrandField $params.outSAMstrandField \\
+		 --chimSegmentMin $params.chimSegmentMin \\
+		 --chimJunctionOverhangMin $params.chimJunctionOverhangMin \\
 		 --outTmpDir $params.scratch
     """
 }
